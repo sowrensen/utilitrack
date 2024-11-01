@@ -35,6 +35,7 @@ class CategoryResource extends Resource
                 Select::make('parent_id')
                     ->label('Parent category')
                     ->relationship('parent', 'name')
+                    ->preload()
                     ->nullable()
                     ->searchable(),
             ]);
