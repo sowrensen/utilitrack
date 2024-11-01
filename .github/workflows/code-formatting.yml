@@ -1,0 +1,35 @@
+name: Laravel Pint
+on:
+    push:
+        branches:
+            - main
+            - development
+jobs:
+  laravel-pint:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.2
+          tools: composer:v2
+
+      - name: Composer Install
+        run: composer install
+
+      - name: Run Laravel Pint
+        run: ./vendor/bin/pint
+
+      - name: Commit changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: Run Laravel Pint
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
