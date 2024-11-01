@@ -2,12 +2,12 @@
 
 namespace Database\Factories;
 
-use App\Models\Utility;
+use App\Models\Category;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-class UtilityFactory extends Factory
+class CategoryFactory extends Factory
 {
-    protected $model = Utility::class;
+    protected $model = Category::class;
 
     public function definition(): array
     {

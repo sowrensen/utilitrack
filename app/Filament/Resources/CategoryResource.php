@@ -4,7 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\UtilityResource\Pages;
 use App\Filament\Resources\UtilityResource\RelationManagers\ChildrenRelationManager;
-use App\Models\Utility;
+use App\Models\Category;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
@@ -16,9 +16,9 @@ use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
-class UtilityResource extends Resource
+class CategoryResource extends Resource
 {
-    protected static ?string $model = Utility::class;
+    protected static ?string $model = Category::class;
 
     protected static ?string $navigationGroup = 'Configuration';
 
@@ -33,7 +33,7 @@ class UtilityResource extends Resource
                     ->unique(ignoreRecord: true),
 
                 Select::make('parent_id')
-                    ->label('Parent Utility')
+                    ->label('Parent category')
                     ->relationship('parent', 'name')
                     ->nullable()
                     ->searchable(),
@@ -82,9 +82,9 @@ class UtilityResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListUtilities::route('/'),
-            'create' => Pages\CreateUtility::route('/create'),
-            'edit' => Pages\EditUtility::route('/{record}/edit'),
+            'index' => Pages\ListCategories::route('/'),
+            'create' => Pages\CreateCategory::route('/create'),
+            'edit' => Pages\EditCategory::route('/{record}/edit'),
         ];
     }
 

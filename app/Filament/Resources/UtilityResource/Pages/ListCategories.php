@@ -2,13 +2,13 @@
 
 namespace App\Filament\Resources\UtilityResource\Pages;
 
-use App\Filament\Resources\UtilityResource;
+use App\Filament\Resources\CategoryResource;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 
-class ListUtilities extends ListRecords
+class ListCategories extends ListRecords
 {
-    protected static string $resource = UtilityResource::class;
+    protected static string $resource = CategoryResource::class;
 
     protected function getHeaderActions(): array
     {

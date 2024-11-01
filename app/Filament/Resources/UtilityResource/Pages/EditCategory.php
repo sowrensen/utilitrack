@@ -2,13 +2,13 @@
 
 namespace App\Filament\Resources\UtilityResource\Pages;
 
-use App\Filament\Resources\UtilityResource;
+use App\Filament\Resources\CategoryResource;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
 
-class EditUtility extends EditRecord
+class EditCategory extends EditRecord
 {
-    protected static string $resource = UtilityResource::class;
+    protected static string $resource = CategoryResource::class;
 
     protected function getHeaderActions(): array
     {

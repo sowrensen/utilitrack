@@ -26,7 +26,7 @@ class ChildrenRelationManager extends RelationManager
     public function table(Table $table): Table
     {
         return $table
-            ->heading('Child Utilities')
+            ->heading('Child Categories')
             ->recordTitleAttribute('name')
             ->columns([
                 Tables\Columns\TextColumn::make('name'),
