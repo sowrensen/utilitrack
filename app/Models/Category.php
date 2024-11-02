@@ -14,7 +14,15 @@ class Category extends Model
     protected $fillable = [
         'name',
         'parent_id',
+        'has_usage_per_day',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'has_usage_per_day' => 'boolean',
+        ];
+    }
 
     public function parent(): BelongsTo
     {

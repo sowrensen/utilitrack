@@ -16,6 +16,7 @@ return new class extends Migration
                 ->nullable()
                 ->constrained()
                 ->nullOnDelete();
+            $table->boolean('has_usage_per_day')->default(false);
             $table->timestamps();
         });
     }

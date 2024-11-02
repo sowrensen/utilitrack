@@ -14,6 +14,7 @@ class CategoryFactory extends Factory
         return [
             'name' => $this->faker->name(),
             'parent_id' => null,
+            'has_usage_per_day' => false,
         ];
     }
 }
