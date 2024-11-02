@@ -6,6 +6,8 @@ use App\Filament\Resources\ExpenseResource\Pages;
 use App\Models\Expense;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -48,19 +50,37 @@ class ExpenseResource extends Resource
                             ->options(['BDT' => 'BDT', 'LITER' => 'LITER'])
                             ->requiredWith(['usable', 'leftover']),
                     ])->columns(3)->columnSpanFull(),
-                Forms\Components\DatePicker::make('purchase_date')
-                    ->suffixIcon('heroicon-o-calendar-date-range')
-                    ->nullable()
-                    ->native(false)
-                    ->maxDate(today()),
-                Forms\Components\DatePicker::make('usage_date')
-                    ->suffixIcon('heroicon-o-calendar-date-range')
-                    ->nullable()
-                    ->native(false)
-                    ->maxDate(today())
-                    ->afterOrEqual('purchase_date'),
+                Forms\Components\Group::make()
+                    ->schema([
+                        Forms\Components\DatePicker::make('purchase_date')
+                            ->live()
+                            ->suffixIcon('heroicon-o-calendar-date-range')
+                            ->required()
+                            ->maxDate(today())
+                            ->native(false),
+                        Forms\Components\Toggle::make('use_same_date')
+                            ->live()
+                            ->disabled(fn (Get $get) => empty($get('purchase_date')))
+                            ->afterStateUpdated(function ($state, Get $get, Set $set) {
+                                if ($state) {
+                                    $set('usage_date', $get('purchase_date'));
+
+                                    return;
+                                }
+                                $set('usage_date', null);
+                            }),
+                        Forms\Components\DatePicker::make('usage_date')
+                            ->suffixIcon('heroicon-o-calendar-date-range')
+                            ->required()
+                            ->maxDate(today())
+                            ->native(false)
+                            ->afterOrEqual('purchase_date'),
+                    ])->columns(3)->columnSpanFull(),
                 Forms\Components\Textarea::make('note')
                     ->columnSpanFull()->rows(4),
+                // Hidden attributes which will be calculated automatically
+                Forms\Components\Hidden::make('interval')->default(0),
+                Forms\Components\Hidden::make('usage_per_day')->default(0),
             ]);
     }
 
@@ -76,16 +96,28 @@ class ExpenseResource extends Resource
                     ->money()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('usable')
-                    ->formatStateUsing(fn ($state, Expense $expense) => "{$expense->usable} {$expense->unit}"),
+                    ->formatStateUsing(fn ($state, Expense $expense) => "{$state} {$expense->unit}"),
                 Tables\Columns\TextColumn::make('leftover')
-                    ->formatStateUsing(fn ($state, Expense $expense) => "{$expense->leftover} {$expense->unit}"),
+                    ->formatStateUsing(fn ($state, Expense $expense) => "{$state} {$expense->unit}"),
                 Tables\Columns\TextColumn::make('purchase_date')
                     ->date()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('usage_date')
                     ->date()
                     ->sortable(),
-                // Tables\Columns\TextColumn::make('interval')->default(0),
+                Tables\Columns\TextColumn::make('interval')
+                    ->label('Interval (days/months)')->wrapHeader()
+                    ->default(0)
+                    ->formatStateUsing(function ($state) {
+                        $months = round($state / 30);
+
+                        return "{$state} / ~ {$months}";
+                    })
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('usage_per_day')
+                    ->label('Usage/day')
+                    ->formatStateUsing(fn ($state, Expense $expense) => "{$state} {$expense->unit}")
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
