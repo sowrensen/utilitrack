@@ -24,6 +24,8 @@ return new class extends Migration
             $table->string('unit', 10)->nullable();
             $table->timestamp('purchase_date')->nullable();
             $table->timestamp('usage_date')->nullable();
+            $table->unsignedInteger('interval')->nullable();
+            $table->unsignedInteger('usage_per_day')->nullable();
             $table->text('note')->nullable();
             $table->timestamps();
         });
