@@ -9,7 +9,11 @@ use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
 use Filament\Resources\Resource;
+use Filament\Support\Colors\Color;
+use Filament\Support\Enums\Alignment;
+use Filament\Support\Enums\FontFamily;
 use Filament\Support\Enums\FontWeight;
+use Filament\Support\Enums\MaxWidth;
 use Filament\Tables;
 use Filament\Tables\Table;
 
@@ -104,6 +108,8 @@ class ExpenseResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('price')
                     ->money()
+                    ->color(Color::Amber)
+                    ->fontFamily(FontFamily::Mono)
                     ->alignRight()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('usable')
@@ -149,6 +155,19 @@ class ExpenseResource extends Resource
                     ->relationship('category', titleAttribute: 'name'),
             ])
             ->actions([
+                Tables\Actions\Action::make('view_note')
+                    ->label(false)
+                    ->icon('heroicon-o-chat-bubble-bottom-center-text')
+                    ->slideOver()
+                    ->modalIcon('heroicon-o-document-text')
+                    ->modalIconColor(Color::Emerald)
+                    ->modalHeading('Viewing Note')
+                    ->modalContent(fn (Expense $expense) => view('filament.pages.actions.note', ['expense' => $expense]))
+                    ->modalAlignment(Alignment::Left)
+                    ->modalSubmitAction(false)
+                    ->modalCancelActionLabel('Close')
+                    ->modalWidth(MaxWidth::Medium)
+                    ->color(Color::Zinc)->visible(fn (Expense $expense) => ! empty($expense->note)),
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
