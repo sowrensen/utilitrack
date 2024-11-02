@@ -17,7 +17,7 @@ class ExpenseResource extends Resource
 {
     protected static ?string $model = Expense::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-document-currency-bangladeshi';
 
     public static function form(Form $form): Form
     {
@@ -41,7 +41,7 @@ class ExpenseResource extends Resource
                             ->required()
                             ->numeric()
                             ->minValue(0)
-                            ->prefix('৳')
+                            ->prefixIcon('heroicon-o-currency-bangladeshi')
                             ->required(),
                         Forms\Components\Group::make([
                             Forms\Components\TextInput::make('usable')
@@ -114,10 +114,11 @@ class ExpenseResource extends Resource
                     ->formatStateUsing(fn ($state, Expense $expense) => "{$state} {$expense->unit}"),
                 Tables\Columns\TextColumn::make('purchase_date')
                     ->date()
+                    ->wrapHeader()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('usage_date')
                     ->date()
-                    ->sortable(),
+                    ->wrapHeader(),
                 Tables\Columns\TextColumn::make('interval')
                     ->label('Interval (days/months)')->wrapHeader()
                     ->default(0)
