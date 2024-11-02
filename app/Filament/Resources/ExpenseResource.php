@@ -9,6 +9,7 @@ use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
 use Filament\Resources\Resource;
+use Filament\Support\Enums\FontWeight;
 use Filament\Tables;
 use Filament\Tables\Table;
 
@@ -22,35 +23,42 @@ class ExpenseResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('category_id')
-                    ->label('Utility')
-                    ->relationship('category', 'name')
-                    ->searchable()
-                    ->preload()
-                    ->required(),
-                Forms\Components\TextInput::make('price')
-                    ->required()
-                    ->numeric()
-                    ->default(0)
-                    ->minValue(0)
-                    ->prefix('৳')
-                    ->required(),
-                Forms\Components\Group::make()
+                Forms\Components\Section::make()
                     ->schema([
-                        Forms\Components\TextInput::make('usable')
+                        Forms\Components\Select::make('category_id')
+                            ->label('Utility')
+                            ->relationship('category', 'name')
+                            ->searchable()
+                            ->preload()
+                            ->required(),
+                        Forms\Components\Textarea::make('note')
+                            ->columnSpanFull()
+                            ->rows(4),
+                    ]),
+                Forms\Components\Section::make()
+                    ->schema([
+                        Forms\Components\TextInput::make('price')
                             ->required()
                             ->numeric()
-                            ->default(null)
-                            ->minValue(0),
-                        Forms\Components\TextInput::make('leftover')
-                            ->numeric()
-                            ->default(null)
-                            ->minValue(0),
+                            ->minValue(0)
+                            ->prefix('৳')
+                            ->required(),
+                        Forms\Components\Group::make([
+                            Forms\Components\TextInput::make('usable')
+                                ->required()
+                                ->numeric()
+                                ->default(null)
+                                ->minValue(0),
+                            Forms\Components\TextInput::make('leftover')
+                                ->numeric()
+                                ->default(0)
+                                ->minValue(0),
+                        ])->columns(2),
                         Forms\Components\Select::make('unit')
                             ->options(['BDT' => 'BDT', 'LITER' => 'LITER'])
                             ->requiredWith(['usable', 'leftover']),
-                    ])->columns(3)->columnSpanFull(),
-                Forms\Components\Group::make()
+                    ])->columnSpan(1),
+                Forms\Components\Section::make()
                     ->schema([
                         Forms\Components\DatePicker::make('purchase_date')
                             ->live()
@@ -72,12 +80,13 @@ class ExpenseResource extends Resource
                         Forms\Components\DatePicker::make('usage_date')
                             ->suffixIcon('heroicon-o-calendar-date-range')
                             ->required()
+                            ->disabled(fn (Get $get) => $get('use_same_date'))
+                            ->dehydrated()
                             ->maxDate(today())
                             ->native(false)
                             ->afterOrEqual('purchase_date'),
-                    ])->columns(3)->columnSpanFull(),
-                Forms\Components\Textarea::make('note')
-                    ->columnSpanFull()->rows(4),
+                    ])->columnSpan(1),
+
                 // Hidden attributes which will be calculated automatically
                 Forms\Components\Hidden::make('interval')->default(0),
                 Forms\Components\Hidden::make('usage_per_day')->default(0),
@@ -91,13 +100,17 @@ class ExpenseResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('category.name')
                     ->numeric()
+                    ->weight(FontWeight::Bold)
                     ->sortable(),
                 Tables\Columns\TextColumn::make('price')
                     ->money()
+                    ->alignRight()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('usable')
+                    ->alignRight()
                     ->formatStateUsing(fn ($state, Expense $expense) => "{$state} {$expense->unit}"),
                 Tables\Columns\TextColumn::make('leftover')
+                    ->alignRight()
                     ->formatStateUsing(fn ($state, Expense $expense) => "{$state} {$expense->unit}"),
                 Tables\Columns\TextColumn::make('purchase_date')
                     ->date()
@@ -108,14 +121,16 @@ class ExpenseResource extends Resource
                 Tables\Columns\TextColumn::make('interval')
                     ->label('Interval (days/months)')->wrapHeader()
                     ->default(0)
+                    ->alignRight()
                     ->formatStateUsing(function ($state) {
                         $months = round($state / 30);
 
-                        return "{$state} / ~ {$months}";
+                        return "{$state} / ~{$months}";
                     })
                     ->sortable(),
                 Tables\Columns\TextColumn::make('usage_per_day')
                     ->label('Usage/day')
+                    ->alignRight()
                     ->formatStateUsing(fn ($state, Expense $expense) => "{$state} {$expense->unit}")
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')

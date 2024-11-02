@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\UtilityResource\Pages;
 use App\Filament\Resources\UtilityResource\RelationManagers\ChildrenRelationManager;
 use App\Models\Category;
+use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
@@ -28,16 +29,19 @@ class CategoryResource extends Resource
     {
         return $form
             ->schema([
-                TextInput::make('name')
-                    ->required()
-                    ->unique(ignoreRecord: true),
+                Section::make()
+                    ->schema([
+                        TextInput::make('name')
+                            ->required()
+                            ->unique(ignoreRecord: true),
 
-                Select::make('parent_id')
-                    ->label('Parent category')
-                    ->relationship('parent', 'name')
-                    ->preload()
-                    ->nullable()
-                    ->searchable(),
+                        Select::make('parent_id')
+                            ->label('Parent category')
+                            ->relationship('parent', 'name')
+                            ->preload()
+                            ->nullable()
+                            ->searchable(),
+                    ])->columnSpan(1),
             ]);
     }
 
