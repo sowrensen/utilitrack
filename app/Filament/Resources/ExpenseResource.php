@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\ExpenseResource\Pages;
 use App\Models\Expense;
 use Filament\Forms;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
@@ -15,7 +16,10 @@ use Filament\Support\Enums\FontFamily;
 use Filament\Support\Enums\FontWeight;
 use Filament\Support\Enums\MaxWidth;
 use Filament\Tables;
+use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Carbon;
 
 class ExpenseResource extends Resource
 {
@@ -153,6 +157,34 @@ class ExpenseResource extends Resource
                 Tables\Filters\SelectFilter::make('categories')
                     ->label('Category')
                     ->relationship('category', titleAttribute: 'name'),
+
+                Filter::make('usage_date')
+                    ->form([
+                        DatePicker::make('usage_from')
+                            ->native(false)
+                            ->maxDate(today()),
+                        DatePicker::make('usage_until')
+                            ->native(false)
+                            ->maxDate(today())
+                            ->default(today()),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['usage_from'] && $data['usage_until'],
+                                fn (Builder $query): Builder => $query->whereBetween('usage_date', [$data['usage_from'], $data['usage_until']]),
+                            );
+                    })
+                    ->indicateUsing(function (array $data): ?string {
+                        if (! $data['usage_from'] || ! $data['usage_until']) {
+                            return null;
+                        }
+
+                        return 'Usage: '
+                            .Carbon::parse($data['usage_from'])->format('M d, Y')
+                            .' – '
+                            .Carbon::parse($data['usage_until'])->format('M d, Y');
+                    }),
             ])
             ->actions([
                 Tables\Actions\Action::make('view_note')
