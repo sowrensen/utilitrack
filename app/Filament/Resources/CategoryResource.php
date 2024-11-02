@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\UtilityResource\Pages;
 use App\Filament\Resources\UtilityResource\RelationManagers\ChildrenRelationManager;
 use App\Models\Category;
+use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -41,6 +42,9 @@ class CategoryResource extends Resource
                             ->preload()
                             ->nullable()
                             ->searchable(),
+
+                        Checkbox::make('has_usage_per_day')
+                            ->helperText('Usage per day will not be calculated if disabled'),
                     ])->columnSpan(1),
             ]);
     }

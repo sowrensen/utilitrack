@@ -75,6 +75,7 @@ class Expense extends Model
     protected static function booted(): void
     {
         $closure = function (Expense $expense) {
+            $category = Category::find($expense->category_id);
             $previous = Expense::query()
                 ->where('category_id', $expense->category_id)
                 ->where('usage_date', '<', $expense->usage_date)
@@ -83,12 +84,11 @@ class Expense extends Model
                 ->first();
 
             $interval = $previous ? (int) round($previous->purchase_date->diffInDays($expense->purchase_date)) : 0;
-            $usagePerDay = $interval > 0
-                ? round(($previous->usable + $previous->leftover - $expense->leftover) / $interval, 2) * 100
-                : 0;
-
+            if ($category->has_usage_per_day && $interval > 0) {
+                $usagePerDay = round(($previous->usable + $previous->leftover - $expense->leftover) / $interval, 2) * 100;
+            }
             $expense->interval = $interval;
-            $expense->usage_per_day = $usagePerDay;
+            $expense->usage_per_day = $usagePerDay ?? 0;
         };
 
         static::creating($closure);
