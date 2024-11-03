@@ -2,6 +2,9 @@
 
 namespace App\Models;
 
+use App\Services\GoogleSheetService;
+use Exception;
+use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -102,5 +105,40 @@ class Expense extends Model
 
         static::creating($closure);
         static::saving($closure);
+    }
+
+    public function appendToExcel(): void
+    {
+        $service = new GoogleSheetService(config('services.google.sheet_id'));
+
+        try {
+            $service->appendCellValues([
+                [
+                    $this->category?->name ?? 'Undefined',
+                    $this->price,
+                    $this->usable,
+                    $this->leftover,
+                    $this->unit,
+                    $this->usage_date->format('M d, Y'),
+                    $this->interval,
+                    $this->interval_months,
+                    $this->usage_per_day,
+                    implode(' ', ['(Appended from app)', $this->note]),
+                ],
+            ], 'Sheet1');
+
+            Notification::make()
+                ->icon('heroicon-o-check-circle')
+                ->title('Your data has been appended to the sheet')
+                ->success()
+                ->sendToDatabase(auth()->user());
+        } catch (Exception $e) {
+            Notification::make()
+                ->icon('heroicon-o-x-circle')
+                ->title('Data appending failed')
+                ->body($e->getMessage())
+                ->danger()
+                ->sendToDatabase(auth()->user());
+        }
     }
 }

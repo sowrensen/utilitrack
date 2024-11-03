@@ -35,4 +35,8 @@ return [
         ],
     ],
 
+    'google' => [
+        'cloud_config_path' => env('GOOGLE_CLOUD_CONFIG_PATH'),
+        'sheet_id' => env('GOOGLE_SHEET_ID'),
+    ],
 ];
