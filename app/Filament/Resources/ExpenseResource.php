@@ -131,13 +131,12 @@ class ExpenseResource extends Resource
                     ->date()
                     ->wrapHeader(),
                 Tables\Columns\TextColumn::make('interval')
-                    ->label('Interval (days/months)')->wrapHeader()
+                    ->label('Interval (days/months)')
+                    ->wrapHeader()
                     ->default(0)
-                    ->alignRight()
-                    ->formatStateUsing(function ($state) {
-                        $months = round($state / 30);
-
-                        return "{$state} / ~{$months}";
+                    ->alignCenter()
+                    ->formatStateUsing(function (Expense $expense) {
+                        return "{$expense->interval} / ~{$expense->interval_months}";
                     })
                     ->sortable(),
                 Tables\Columns\TextColumn::make('usage_per_day')
@@ -206,6 +205,7 @@ class ExpenseResource extends Resource
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\ExportBulkAction::make()
+                        ->label('Export to file')
                         ->exporter(ExpenseExporter::class),
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),

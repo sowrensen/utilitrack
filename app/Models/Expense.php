@@ -25,6 +25,10 @@ class Expense extends Model
         'note',
     ];
 
+    protected $appends = [
+        'interval_months',
+    ];
+
     protected function casts(): array
     {
         return [
@@ -70,6 +74,11 @@ class Expense extends Model
     public function usagePerDay(): Attribute
     {
         return Attribute::get(fn ($value) => round($value / 100, 2));
+    }
+
+    public function intervalMonths(): Attribute
+    {
+        return Attribute::get(fn ($value, $attributes) => round($attributes['interval'] / 30));
     }
 
     protected static function booted(): void

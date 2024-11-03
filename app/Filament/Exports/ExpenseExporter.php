@@ -25,8 +25,7 @@ class ExpenseExporter extends Exporter
             ExportColumn::make('interval')
                 ->label('Interval (days)'),
             ExportColumn::make('interval_months')
-                ->label('Interval (months)')
-                ->state(fn (Expense $expense) => round($expense->interval / 30)),
+                ->label('Interval (months)'),
             ExportColumn::make('usage_per_day')->label('Usage/day'),
             ExportColumn::make('note'),
         ];
