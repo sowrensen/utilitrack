@@ -16,7 +16,7 @@ class CreateExpense extends CreateRecord
         defer(function () {
             /** @var Expense $expense */
             $expense = $this->record;
-            if (config('settings.enable_logging_to_google_sheet')) {
+            if ($this->data['append_to_google_sheets']) {
                 $expense->appendToExcel();
             }
         });
@@ -24,7 +24,7 @@ class CreateExpense extends CreateRecord
 
     protected function getCreatedNotification(): ?Notification
     {
-        $body = config('settings.enable_logging_to_google_sheet')
+        $body = $this->data['append_to_google_sheets']
             ? 'Your data will be appended to the sheet' : null;
 
         return Notification::make()

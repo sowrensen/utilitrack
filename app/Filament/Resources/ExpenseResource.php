@@ -97,7 +97,15 @@ class ExpenseResource extends Resource
                             ->afterOrEqual('purchase_date'),
                     ])->columnSpan(1),
 
-                // Hidden attributes which will be calculated automatically
+                // Control logging in google sheet
+                Forms\Components\Checkbox::make('append_to_google_sheets')
+                    ->label('Append to Google Sheets')
+                    ->visible(config('services.google.sheet_id') && config('services.google.cloud_config_path'))
+                    ->hiddenOn(Pages\EditExpense::class)
+                    ->default(false),
+
+                // Hidden attributes which will be calculated automatically, we need them
+                // here to trigger the calculation located in Expense model.
                 Forms\Components\Hidden::make('interval')->default(0),
                 Forms\Components\Hidden::make('usage_per_day')->default(0),
             ]);
