@@ -21,6 +21,7 @@ use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
+use Livewire\Component;
 
 class ExpenseResource extends Resource
 {
@@ -116,13 +117,29 @@ class ExpenseResource extends Resource
                     ->color(Color::Amber)
                     ->fontFamily(FontFamily::Mono)
                     ->alignRight()
-                    ->sortable(),
+                    ->sortable()
+                    ->summarize(
+                        Tables\Columns\Summarizers\Sum::make()
+                            ->money(divideBy: 100)
+                    ),
                 Tables\Columns\TextColumn::make('usable')
                     ->alignRight()
-                    ->formatStateUsing(fn ($state, Expense $expense) => "{$state} {$expense->unit}"),
+                    ->formatStateUsing(fn ($state, Expense $expense) => "{$state} {$expense->unit}")
+                    ->summarize(
+                        Tables\Columns\Summarizers\Sum::make()
+                            ->numeric()
+                            ->visible(fn (Component $livewire) => ! empty($livewire->tableFilters['categories']['value']))
+                            ->formatStateUsing(fn ($state) => round($state / 100, 2))
+                    ),
                 Tables\Columns\TextColumn::make('leftover')
                     ->alignRight()
-                    ->formatStateUsing(fn ($state, Expense $expense) => "{$state} {$expense->unit}"),
+                    ->formatStateUsing(fn ($state, Expense $expense) => "{$state} {$expense->unit}")
+                    ->summarize(
+                        Tables\Columns\Summarizers\Sum::make()
+                            ->numeric()
+                            ->visible(fn (Component $livewire) => ! empty($livewire->tableFilters['categories']['value']))
+                            ->formatStateUsing(fn ($state) => round($state / 100, 2))
+                    ),
                 Tables\Columns\TextColumn::make('purchase_date')
                     ->date()
                     ->wrapHeader()
@@ -133,7 +150,6 @@ class ExpenseResource extends Resource
                 Tables\Columns\TextColumn::make('interval')
                     ->label('Interval (days/months)')
                     ->wrapHeader()
-                    ->default(0)
                     ->alignCenter()
                     ->formatStateUsing(function (Expense $expense) {
                         return "{$expense->interval} / ~{$expense->interval_months}";
@@ -143,7 +159,12 @@ class ExpenseResource extends Resource
                     ->label('Usage/day')
                     ->alignRight()
                     ->formatStateUsing(fn ($state, Expense $expense) => "{$state} {$expense->unit}")
-                    ->sortable(),
+                    ->sortable()
+                    ->summarize(
+                        Tables\Columns\Summarizers\Average::make()
+                            ->visible(fn (Component $livewire) => ! empty($livewire->tableFilters['categories']['value']))
+                            ->formatStateUsing(fn ($state) => round($state / 100, 2))
+                    ),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

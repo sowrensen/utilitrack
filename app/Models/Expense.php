@@ -32,6 +32,10 @@ class Expense extends Model
         'interval_months',
     ];
 
+    protected $with = [
+        'category',
+    ];
+
     protected function casts(): array
     {
         return [
