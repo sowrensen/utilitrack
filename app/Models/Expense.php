@@ -132,13 +132,12 @@ class Expense extends Model
             ], 'Sheet1');
 
             Notification::make()
-                ->icon('heroicon-o-check-circle')
-                ->title('Your data has been appended to the sheet')
+                ->title('Success')
+                ->body('Your data has been appended to the sheet')
                 ->success()
                 ->sendToDatabase(auth()->user());
         } catch (Exception $e) {
             Notification::make()
-                ->icon('heroicon-o-x-circle')
                 ->title('Data appending failed')
                 ->body($e->getMessage())
                 ->danger()
