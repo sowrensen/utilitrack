@@ -61,7 +61,7 @@ class CategoryResource extends Resource
                     ->default('N/A'),
 
                 TextColumn::make('children_count')
-                    ->label('Children')
+                    ->label('Subcategories')
                     ->counts('children')
                     ->default(0)
                     ->hiddenOn(ChildrenRelationManager::class)
