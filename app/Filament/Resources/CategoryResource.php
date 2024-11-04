@@ -2,8 +2,8 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\UtilityResource\Pages;
-use App\Filament\Resources\UtilityResource\RelationManagers\ChildrenRelationManager;
+use App\Filament\Resources\CategoryResource\Pages;
+use App\Filament\Resources\CategoryResource\RelationManagers\ChildrenRelationManager;
 use App\Models\Category;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\Section;
