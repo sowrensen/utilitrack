@@ -4,18 +4,18 @@ namespace App\Filament\Resources\ExpenseResource\Widgets;
 
 use App\Models\Category;
 use App\Models\Expense;
-use Cache;
-use Carbon\Carbon;
 use Filament\Forms\Components\DatePicker;
 use Flowframe\Trend\Trend;
 use Flowframe\Trend\TrendValue;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Cache;
 use Leandrocfe\FilamentApexCharts\Widgets\ApexChartWidget;
 
-class ElectricityExpenseChart extends ApexChartWidget
+class GasExpenseChart extends ApexChartWidget
 {
-    protected static ?string $chartId = 'electricityExpenseChart';
+    protected static ?string $chartId = 'gasExpenseChart';
 
-    protected static ?string $heading = 'Electricity Usage';
+    protected static ?string $heading = 'Gas Usage';
 
     protected int|string|array $columnSpan = 'full';
 
@@ -35,11 +35,11 @@ class ElectricityExpenseChart extends ApexChartWidget
 
     protected function getOptions(): array
     {
-        $cacheKey = 'electricity_usage_'.collect($this->filterFormData)->values()->join('_');
+        $cacheKey = 'gas_usage_'.collect($this->filterFormData)->values()->join('_');
         $data = Cache::flexible($cacheKey, [now()->addHour(), now()->addHour()->addMinutes(5)], function () {
-            $electricity = Category::query()->where('name', 'Electricity')->first();
+            $gas = Category::query()->where('name', 'Gas')->first();
 
-            return Trend::query(Expense::query()->where('category_id', $electricity->id))
+            return Trend::query(Expense::query()->where('category_id', $gas->id))
                 ->dateColumn('usage_date')
                 ->between(
                     Carbon::parse($this->filterFormData['usage_from']),
