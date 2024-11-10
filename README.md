@@ -89,7 +89,7 @@ GOOGLE_SHEET_ID=
 
 Login using your admin credentials. You will see the dashboard.
 
-![Dashboard](https://github.com/user-attachments/assets/59b315da-b579-4842-b622-e62c3cefe1a5)
+![Dashboard](https://github.com/user-attachments/assets/c94738de-76a1-45fe-8eee-103d6ad24ac1)
 
 #### Categories
 
