@@ -26,14 +26,20 @@ class Expense extends Model
         'interval',
         'usage_per_day',
         'note',
+        'appended_at',
     ];
 
     protected $appends = [
         'interval_months',
+        'is_appended',
     ];
 
     protected $with = [
         'category',
+    ];
+
+    protected $hidden = [
+        'appended_at',
     ];
 
     protected function casts(): array
@@ -41,6 +47,7 @@ class Expense extends Model
         return [
             'purchase_date' => 'date',
             'usage_date' => 'date',
+            'appended_at' => 'datetime',
         ];
     }
 
@@ -88,6 +95,11 @@ class Expense extends Model
         return Attribute::get(fn ($value, $attributes) => round($attributes['interval'] / 30));
     }
 
+    public function isAppended(): Attribute
+    {
+        return Attribute::get(fn ($value, $attributes) => ! empty($attributes['appended_at']));
+    }
+
     protected static function booted(): void
     {
         $closure = function (Expense $expense) {
@@ -130,6 +142,8 @@ class Expense extends Model
                     implode(' ', ['(Appended from app)', $this->note]),
                 ],
             ], 'Sheet1');
+
+            $this->update(['appended_at' => now()]);
 
             Notification::make()
                 ->title('Success')
