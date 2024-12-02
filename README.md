@@ -124,7 +124,8 @@ checkbox will appear if you've configured the [Google Sheets](#google-sheets) se
 
 > [!CAUTION]
 > If you update the entry later, your changes will not be reflected in the Google Sheet. Also deleting the
-> entry from the app won't remove it from the sheet.
+> entry from the app won't remove it from the sheet. However, you can append the entry anytime later from Edit if you
+> haven't during creation.
 
 ![New Entry](https://github.com/user-attachments/assets/c2120ac1-53c1-4909-941d-a6c2bda405ac)
 
