@@ -19,7 +19,7 @@ class EditExpense extends EditRecord
             Actions\DeleteAction::make(),
             Actions\Action::make('append')
                 ->label('Append to Excel')
-                ->color(Color::Neutral)
+                ->color(Color::Amber)
                 ->requiresConfirmation(fn (Expense $e) => $e->is_appended)
                 ->modalDescription(fn (Expense $e) => $e->is_appended ? 'Data is already appended, are you sure?' : null)
                 ->action(function (Expense $expense) {

@@ -58,13 +58,19 @@ class CategoryResource extends Resource
                     ->sortable(),
 
                 TextColumn::make('parent.name')
-                    ->default('N/A'),
+                    ->placeholder('N/A'),
 
                 TextColumn::make('children_count')
                     ->label('Subcategories')
                     ->counts('children')
-                    ->default(0)
+                    ->placeholder(0)
                     ->hiddenOn(ChildrenRelationManager::class)
+                    ->sortable(),
+
+                TextColumn::make('expenses_count')
+                    ->label('Entries')
+                    ->counts('expenses')
+                    ->placeholder(0)
                     ->sortable(),
             ])
             ->filters([

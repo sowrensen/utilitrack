@@ -102,6 +102,8 @@ class Expense extends Model
 
     protected static function booted(): void
     {
+        // We will calculate the interval and usage per day automatically,
+        // based on the previous record we have for the same category.
         $closure = function (Expense $expense) {
             $category = Category::find($expense->category_id);
             $previous = Expense::query()
