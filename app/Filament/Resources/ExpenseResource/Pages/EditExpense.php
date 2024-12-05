@@ -8,10 +8,24 @@ use Filament\Actions;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Filament\Support\Colors\Color;
+use Illuminate\Contracts\Support\Htmlable;
+use Illuminate\Support\HtmlString;
 
 class EditExpense extends EditRecord
 {
     protected static string $resource = ExpenseResource::class;
+
+    public function getHeading(): string|Htmlable
+    {
+        $color = $this->record?->is_appended ? 'bg-primary-500' : 'bg-gray-400';
+
+        return new HtmlString("
+             <span class='flex items-center'>
+                <span>Edit Expense</span>
+                <span class='mx-1 mt-1 rounded-full h-1.5 w-1.5 {$color}'/>
+            </span>
+        ");
+    }
 
     protected function getHeaderActions(): array
     {
