@@ -61,7 +61,7 @@ class ExpenseChart extends ApexChartWidget
                 ->default('Electricity'),
             DatePicker::make('usage_from')
                 ->native(false)
-                ->default(today()->startOfYear()),
+                ->default(today()->startOfMonth()->subMonths(11)),
             DatePicker::make('usage_until')
                 ->native(false)
                 ->default(today()),
