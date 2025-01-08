@@ -7,7 +7,6 @@ use App\Models\Expense;
 use Filament\Actions;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
-use Filament\Support\Colors\Color;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Support\HtmlString;
 
@@ -33,9 +32,10 @@ class EditExpense extends EditRecord
             Actions\DeleteAction::make(),
             Actions\Action::make('append')
                 ->label('Append to Excel')
-                ->color(Color::Amber)
+                ->color('gray')
                 ->requiresConfirmation(fn (Expense $e) => $e->is_appended)
                 ->modalDescription(fn (Expense $e) => $e->is_appended ? 'Data is already appended, are you sure?' : null)
+                ->visible(config('services.google.sheet_id') && config('services.google.cloud_config_path'))
                 ->action(function (Expense $expense) {
                     $expense->appendToExcel();
 

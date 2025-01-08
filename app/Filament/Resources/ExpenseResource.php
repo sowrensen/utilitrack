@@ -43,7 +43,7 @@ class ExpenseResource extends Resource
                             ->required(),
                         Forms\Components\Textarea::make('note')
                             ->columnSpanFull()
-                            ->rows(4),
+                            ->rows(3),
                     ]),
                 Forms\Components\Section::make()
                     ->schema([
