@@ -89,7 +89,6 @@ class ExpenseResource extends Resource
                             }),
                         Forms\Components\DatePicker::make('usage_date')
                             ->suffixIcon('heroicon-o-calendar-date-range')
-                            ->required()
                             ->disabled(fn (Get $get) => $get('use_same_date'))
                             ->dehydrated()
                             ->maxDate(today())

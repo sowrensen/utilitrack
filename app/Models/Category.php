@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -15,6 +16,7 @@ class Category extends Model
         'name',
         'parent_id',
         'has_usage_per_day',
+        'unit',
     ];
 
     protected function casts(): array
@@ -37,5 +39,10 @@ class Category extends Model
     public function expenses(): HasMany
     {
         return $this->hasMany(Expense::class);
+    }
+
+    public function unit(): Attribute
+    {
+        return Attribute::set(fn ($value) => strtoupper($value));
     }
 }

@@ -6,6 +6,7 @@ use App\Filament\Resources\CategoryResource\Pages;
 use App\Filament\Resources\CategoryResource\RelationManagers\ChildrenRelationManager;
 use App\Models\Category;
 use Filament\Forms\Components\Checkbox;
+use Filament\Forms\Components\Group;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -36,12 +37,18 @@ class CategoryResource extends Resource
                             ->required()
                             ->unique(ignoreRecord: true),
 
-                        Select::make('parent_id')
-                            ->label('Parent category')
-                            ->relationship('parent', 'name')
-                            ->preload()
-                            ->nullable()
-                            ->searchable(),
+                        Group::make([
+                            Select::make('parent_id')
+                                ->label('Parent category')
+                                ->relationship('parent', 'name')
+                                ->preload()
+                                ->nullable()
+                                ->searchable(),
+
+                            TextInput::make('unit')
+                                ->placeholder('BDT, USD, LITER, etc.')
+                                ->nullable(),
+                        ])->columns(2),
 
                         Checkbox::make('has_usage_per_day')
                             ->helperText('Usage per day will not be calculated if disabled'),
@@ -58,6 +65,9 @@ class CategoryResource extends Resource
                     ->sortable(),
 
                 TextColumn::make('parent.name')
+                    ->placeholder('N/A'),
+
+                TextColumn::make('unit')
                     ->placeholder('N/A'),
 
                 TextColumn::make('children_count')
