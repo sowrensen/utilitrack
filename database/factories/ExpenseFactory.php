@@ -22,7 +22,6 @@ class ExpenseFactory extends Factory
             'price' => fake()->numberBetween(100, 200),
             'usable' => fake()->numberBetween(100, 200),
             'leftover' => 0,
-            'unit' => fake()->randomElement(['BDT', 'L']),
             'purchase_date' => now(),
             'usage_date' => now(),
             'note' => null,

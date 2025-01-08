@@ -19,7 +19,7 @@ class ExpenseExporter extends Exporter
             ExportColumn::make('price'),
             ExportColumn::make('usable'),
             ExportColumn::make('leftover'),
-            ExportColumn::make('unit'),
+            ExportColumn::make('category.unit')->label('Unit'),
             ExportColumn::make('purchase_date'),
             ExportColumn::make('usage_date'),
             ExportColumn::make('interval')

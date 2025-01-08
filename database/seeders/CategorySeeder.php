@@ -8,10 +8,10 @@ use Illuminate\Database\Seeder;
 class CategorySeeder extends Seeder
 {
     private array $categories = [
-        ['name' => 'Electricity', 'has_usage_per_day' => true],
-        ['name' => 'Gas', 'has_usage_per_day' => true],
-        ['name' => 'Water Filter', 'has_usage_per_day' => false],
-        ['name' => 'Internet', 'has_usage_per_day' => false],
+        ['name' => 'Electricity', 'has_usage_per_day' => true, 'unit' => 'BDT'],
+        ['name' => 'Gas', 'has_usage_per_day' => true, 'unit' => 'BDT'],
+        ['name' => 'Water Filter', 'has_usage_per_day' => false, 'unit' => 'LITER'],
+        ['name' => 'Internet', 'has_usage_per_day' => false, 'unit' => 'BDT'],
     ];
 
     /**

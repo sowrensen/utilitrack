@@ -15,6 +15,7 @@ class CategoryFactory extends Factory
             'name' => $this->faker->name(),
             'parent_id' => null,
             'has_usage_per_day' => false,
+            'unit' => fake()->randomElement(['BDT', 'USD', 'LITER']),
         ];
     }
 }

@@ -27,7 +27,6 @@ class ExpenseImporter extends Importer
                 ->rules(['required']),
             ImportColumn::make('leftover')
                 ->numeric(),
-            ImportColumn::make('unit'),
             ImportColumn::make('purchase_date')
                 ->rules(['date']),
             ImportColumn::make('usage_date')

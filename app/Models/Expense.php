@@ -20,7 +20,6 @@ class Expense extends Model
         'price',
         'usable',
         'leftover',
-        'unit',
         'purchase_date',
         'usage_date',
         'interval',
@@ -80,11 +79,6 @@ class Expense extends Model
         );
     }
 
-    public function unit(): Attribute
-    {
-        return Attribute::set(fn ($value) => strtoupper($value));
-    }
-
     public function usagePerDay(): Attribute
     {
         return Attribute::get(fn ($value) => round($value / 100, 2));
@@ -136,7 +130,7 @@ class Expense extends Model
                     $this->price,
                     $this->usable,
                     $this->leftover,
-                    $this->unit,
+                    $this->category?->unit,
                     $this->usage_date->format('M d, Y'),
                     $this->interval,
                     $this->interval_months,

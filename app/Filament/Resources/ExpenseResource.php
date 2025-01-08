@@ -55,18 +55,17 @@ class ExpenseResource extends Resource
                             ->required(),
                         Forms\Components\Group::make([
                             Forms\Components\TextInput::make('usable')
+                                ->label('Usable quantity')
                                 ->required()
                                 ->numeric()
                                 ->default(null)
                                 ->minValue(0),
                             Forms\Components\TextInput::make('leftover')
+                                ->label('Leftover quantity')
                                 ->numeric()
                                 ->default(0)
                                 ->minValue(0),
                         ])->columns(2),
-                        Forms\Components\Select::make('unit')
-                            ->options(['BDT' => 'BDT', 'LITER' => 'LITER'])
-                            ->requiredWith(['usable', 'leftover']),
                     ])->columnSpan(1),
                 Forms\Components\Section::make()
                     ->schema([
@@ -131,7 +130,7 @@ class ExpenseResource extends Resource
                     ),
                 Tables\Columns\TextColumn::make('usable')
                     ->alignRight()
-                    ->formatStateUsing(fn ($state, Expense $expense) => "{$state} {$expense->unit}")
+                    ->formatStateUsing(fn ($state, Expense $expense) => "{$state} {$expense->category?->unit}")
                     ->summarize(
                         Tables\Columns\Summarizers\Sum::make()
                             ->numeric()
@@ -140,7 +139,7 @@ class ExpenseResource extends Resource
                     ),
                 Tables\Columns\TextColumn::make('leftover')
                     ->alignRight()
-                    ->formatStateUsing(fn ($state, Expense $expense) => "{$state} {$expense->unit}")
+                    ->formatStateUsing(fn ($state, Expense $expense) => "{$state} {$expense->category?->unit}")
                     ->summarize(
                         Tables\Columns\Summarizers\Sum::make()
                             ->numeric()
@@ -165,7 +164,7 @@ class ExpenseResource extends Resource
                 Tables\Columns\TextColumn::make('usage_per_day')
                     ->label('Usage/day')
                     ->alignRight()
-                    ->formatStateUsing(fn ($state, Expense $expense) => "{$state} {$expense->unit}")
+                    ->formatStateUsing(fn ($state, Expense $expense) => "{$state} {$expense->category?->unit}")
                     ->sortable()
                     ->summarize(
                         Tables\Columns\Summarizers\Average::make()
