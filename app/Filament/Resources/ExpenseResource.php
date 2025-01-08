@@ -152,6 +152,7 @@ class ExpenseResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('usage_date')
                     ->date()
+                    ->placeholder('TBD')
                     ->wrapHeader(),
                 Tables\Columns\TextColumn::make('interval')
                     ->label('Interval (days/months)')

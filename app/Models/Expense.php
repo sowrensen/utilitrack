@@ -102,7 +102,7 @@ class Expense extends Model
             $category = Category::find($expense->category_id);
             $previous = Expense::query()
                 ->where('category_id', $expense->category_id)
-                ->where('usage_date', '<', $expense->usage_date)
+                ->where('usage_date', '<', $expense->usage_date ?? $expense->purchase_date)
                 ->orderBy('usage_date', 'desc')
                 ->take(1)
                 ->first();
