@@ -40,10 +40,10 @@ php artisan migrate
 ```
 
 There is also a seeder for `Category`. It has four default categories, if you want them, append `--seed` to migration
-command. Otherwise run,
+command. You can seed later as well by running,
 
 ```bash
-php artisan db:seed
+php artisan db:seed --class=CategorySeeder
 ```
 
 ### Queue
@@ -131,8 +131,10 @@ checkbox will appear if you've configured the [Google Sheets](#google-sheets) se
 
 #### Editing entry
 
-While editing an existing entry you can append the row google sheet if you haven't already. For already appended entries,
-a green dot will appear beside the title. Otherwise a gray dot will show. `Append to GSheets` button will appear if you've 
+While editing an existing entry you can append the row google sheet if you haven't already. For already appended
+entries,
+a green dot will appear beside the title. Otherwise a gray dot will show. `Append to GSheets` button will appear if
+you've
 configured the [Google Sheets](#google-sheets) section regardless of appended or not.
 
 ![Editing Entry](https://github.com/user-attachments/assets/26c109de-f84c-4cd8-bdf7-1daede193eea)

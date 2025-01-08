@@ -97,7 +97,7 @@ class ExpenseResource extends Resource
 
                 // Control logging in google sheet
                 Forms\Components\Checkbox::make('append_to_google_sheets')
-                    ->label('Append to Google Sheets')
+                    ->label('Append to GSheets')
                     ->visible(config('services.google.sheet_id') && config('services.google.cloud_config_path'))
                     ->hiddenOn(Pages\EditExpense::class)
                     ->default(false),

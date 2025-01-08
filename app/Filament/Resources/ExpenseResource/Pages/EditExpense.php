@@ -31,8 +31,9 @@ class EditExpense extends EditRecord
         return [
             Actions\DeleteAction::make(),
             Actions\Action::make('append')
-                ->label('Append to Excel')
+                ->label('Append to GSheets')
                 ->color('gray')
+                ->icon('heroicon-o-bars-arrow-up')
                 ->requiresConfirmation(fn (Expense $e) => $e->is_appended)
                 ->modalDescription(fn (Expense $e) => $e->is_appended ? 'Data is already appended, are you sure?' : null)
                 ->visible(config('services.google.sheet_id') && config('services.google.cloud_config_path'))
