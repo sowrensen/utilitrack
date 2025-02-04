@@ -6,6 +6,7 @@ use App\Filament\Resources\ExpenseResource\Widgets\ExpenseChart;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use Filament\Navigation\MenuItem;
 use Filament\Navigation\NavigationItem;
 use Filament\Pages;
 use Filament\Panel;
@@ -77,6 +78,14 @@ class AdminPanelProvider extends PanelProvider
                     ->icon('heroicon-o-arrow-top-right-on-square')
                     ->openUrlInNewTab()
                     ->group('Maintenance'),
+            ])
+            ->userMenuItems([
+                MenuItem::make()
+                    ->label('Go to GSheets')
+                    ->icon('heroicon-o-arrow-top-right-on-square')
+                    ->visible(config('services.google.sheet_id') && config('services.google.cloud_config_path'))
+                    ->url('https://docs.google.com/spreadsheets/d/'.config('services.google.sheet_id'))
+                    ->openUrlInNewTab(),
             ]);
     }
 }
