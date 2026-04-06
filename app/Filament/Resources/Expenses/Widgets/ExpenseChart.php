@@ -7,6 +7,8 @@ use App\Models\Expense;
 use Carbon\Carbon;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
+use Filament\Schemas\Schema;
+use Filament\Widgets\ChartWidget\Concerns\HasFiltersSchema;
 use Flowframe\Trend\Trend;
 use Flowframe\Trend\TrendValue;
 use Illuminate\Support\Facades\Cache;
@@ -14,13 +16,15 @@ use Leandrocfe\FilamentApexCharts\Widgets\ApexChartWidget;
 
 class ExpenseChart extends ApexChartWidget
 {
+    use HasFiltersSchema;
+
     protected static ?string $chartId = 'expenseChart';
 
     protected int|string|array $columnSpan = 'full';
 
     protected function getHeading(): ?string
     {
-        return $this->filterFormData['category'].' Usage';
+        return ($this->filters['category'] ?? 'Electricity').' Usage';
     }
 
     protected array $filterMap = [
@@ -50,9 +54,9 @@ class ExpenseChart extends ApexChartWidget
         ],
     ];
 
-    protected function getFormSchema(): array
+    public function filtersSchema(Schema $schema): Schema
     {
-        return [
+        return $schema->components([
             Select::make('category')
                 ->selectablePlaceholder(false)
                 ->options(Category::all()->pluck('name', 'name'))
@@ -63,13 +67,18 @@ class ExpenseChart extends ApexChartWidget
             DatePicker::make('usage_until')
                 ->native(false)
                 ->default(today()),
-        ];
+        ]);
+    }
+
+    public function updatedInteractsWithSchemas(string $statePath): void
+    {
+        $this->updateOptions();
     }
 
     protected function getOptions(): array
     {
-        $cacheKey = 'usage_'.collect($this->filterFormData)->values()->join('_');
-        $category = $this->filterFormData['category'];
+        $cacheKey = 'usage_'.collect($this->filters)->values()->join('_');
+        $category = $this->filters['category'] ?? 'Electricity';
 
         $data = Cache::flexible($cacheKey, [now()->addHour(), now()->addHour()->addMinutes(5)], function () use ($category) {
             $catId = Category::query()->where('name', $category)->first()->id;
@@ -77,8 +86,8 @@ class ExpenseChart extends ApexChartWidget
             return Trend::query(Expense::query()->where('category_id', $catId))
                 ->dateColumn($this->filterMap[$category]['date_column'])
                 ->between(
-                    Carbon::parse($this->filterFormData['usage_from']),
-                    Carbon::parse($this->filterFormData['usage_until']),
+                    Carbon::parse($this->filters['usage_from'] ?? today()->startOfMonth()->subMonths(11)),
+                    Carbon::parse($this->filters['usage_until'] ?? today()),
                 )
                 ->perMonth()
                 ->{$this->filterMap[$category]['aggregate']}($this->filterMap[$category]['aggregate_column']);

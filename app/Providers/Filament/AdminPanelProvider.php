@@ -2,14 +2,13 @@
 
 namespace App\Providers\Filament;
 
-use Filament\Pages\Dashboard;
 use App\Filament\Resources\Expenses\Widgets\ExpenseChart;
+use Filament\Actions\Action;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
-use Filament\Navigation\MenuItem;
 use Filament\Navigation\NavigationItem;
-use Filament\Pages;
+use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
@@ -33,6 +32,7 @@ class AdminPanelProvider extends PanelProvider
             ->path(config('filament.path', '')) // Do not set path while using domain
             ->domain(config('filament.domain', ''))
             ->login()
+            ->spa(hasPrefetching: true)
             ->colors([
                 'primary' => Color::Emerald,
             ])
@@ -81,7 +81,7 @@ class AdminPanelProvider extends PanelProvider
                     ->group('Maintenance'),
             ])
             ->userMenuItems([
-                MenuItem::make()
+                Action::make('go-to-gsheets')
                     ->label('Go to GSheets')
                     ->icon('heroicon-o-arrow-top-right-on-square')
                     ->visible(config('services.google.sheet_id') && config('services.google.cloud_config_path'))
