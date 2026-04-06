@@ -105,4 +105,21 @@ return [
 
     'prefix' => env('CACHE_PREFIX', Str::slug(env('APP_NAME', 'laravel'), '_').'_cache_'),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Serializable Classes
+    |--------------------------------------------------------------------------
+    |
+    | Laravel's cache unserialization now features a hardened, secure-by-default
+    | approach. Explicitly list any classes that may be stored in the cache as
+    | objects and subsequently unserialized. Setting this to false means that
+    | no PHP objects will be unserialized from the cache.
+    |
+    */
+
+    'serializable_classes' => [
+        Illuminate\Support\Collection::class,
+        Flowframe\Trend\TrendValue::class,
+    ],
+
 ];
