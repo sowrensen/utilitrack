@@ -1,8 +1,10 @@
 <?php
 
-namespace App\Filament\Resources\ExpenseResource\Pages;
+namespace App\Filament\Resources\Expenses\Pages;
 
-use App\Filament\Resources\ExpenseResource;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\Action;
+use App\Filament\Resources\Expenses\ExpenseResource;
 use App\Models\Expense;
 use Filament\Actions;
 use Filament\Notifications\Notification;
@@ -29,8 +31,8 @@ class EditExpense extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
-            Actions\Action::make('append')
+            DeleteAction::make(),
+            Action::make('append')
                 ->label('Append to GSheets')
                 ->color('gray')
                 ->icon('heroicon-o-bars-arrow-up')

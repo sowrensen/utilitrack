@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Database\Factories\ExpenseFactory;
 use App\Services\GoogleSheetService;
 use Exception;
 use Filament\Notifications\Notification;
@@ -12,7 +13,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Expense extends Model
 {
-    /** @use HasFactory<\Database\Factories\ExpenseFactory> */
+    /** @use HasFactory<ExpenseFactory> */
     use HasFactory;
 
     protected $fillable = [

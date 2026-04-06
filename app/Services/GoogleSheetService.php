@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use Google\Service\Sheets\ValueRange;
+use Google\Service\Sheets\AppendValuesResponse;
 use Google\Client;
 use Google\Service\Sheets;
 
@@ -23,14 +25,14 @@ class GoogleSheetService
         $this->service = new Sheets($this->googleClient);
     }
 
-    public function readCellValues(string $range): Sheets\ValueRange
+    public function readCellValues(string $range): ValueRange
     {
         return $this->service->spreadsheets_values->get($this->spreadsheetId, $range);
     }
 
-    public function appendCellValues(array $values, string $range = 'Sheet1'): Sheets\AppendValuesResponse
+    public function appendCellValues(array $values, string $range = 'Sheet1'): AppendValuesResponse
     {
-        $body = new Sheets\ValueRange([
+        $body = new ValueRange([
             'values' => $values,
         ]);
 

@@ -1,21 +1,41 @@
 <?php
 
-namespace App\Filament\Resources;
+namespace App\Filament\Resources\Expenses;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Section;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Group;
+use Filament\Forms\Components\Toggle;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
+use Filament\Forms\Components\Checkbox;
+use App\Filament\Resources\Expenses\Pages\EditExpense;
+use Filament\Forms\Components\Hidden;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\Summarizers\Sum;
+use Filament\Tables\Columns\Summarizers\Average;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Actions\Action;
+use Filament\Support\Enums\Width;
+use Filament\Actions\EditAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\ExportBulkAction;
+use Filament\Actions\DeleteBulkAction;
+use App\Filament\Resources\Expenses\Pages\ListExpenses;
+use App\Filament\Resources\Expenses\Pages\CreateExpense;
 use App\Filament\Exports\ExpenseExporter;
 use App\Filament\Resources\ExpenseResource\Pages;
 use App\Models\Expense;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Form;
-use Filament\Forms\Get;
-use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Support\Colors\Color;
 use Filament\Support\Enums\Alignment;
 use Filament\Support\Enums\FontFamily;
 use Filament\Support\Enums\FontWeight;
-use Filament\Support\Enums\MaxWidth;
 use Filament\Tables;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
@@ -27,55 +47,55 @@ class ExpenseResource extends Resource
 {
     protected static ?string $model = Expense::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-document-currency-bangladeshi';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-document-currency-bangladeshi';
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Section::make()
+        return $schema
+            ->components([
+                Section::make()
                     ->schema([
-                        Forms\Components\Select::make('category_id')
+                        Select::make('category_id')
                             ->label('Utility')
                             ->relationship('category', 'name')
                             ->searchable()
                             ->preload()
                             ->required(),
-                        Forms\Components\Textarea::make('note')
+                        Textarea::make('note')
                             ->columnSpanFull()
                             ->rows(3),
                     ]),
-                Forms\Components\Section::make()
+                Section::make()
                     ->schema([
-                        Forms\Components\TextInput::make('price')
+                        TextInput::make('price')
                             ->required()
                             ->numeric()
                             ->minValue(0)
                             ->prefixIcon('heroicon-o-currency-bangladeshi')
                             ->required(),
-                        Forms\Components\Group::make([
-                            Forms\Components\TextInput::make('usable')
+                        Group::make([
+                            TextInput::make('usable')
                                 ->label('Usable quantity')
                                 ->required()
                                 ->numeric()
                                 ->default(null)
                                 ->minValue(0),
-                            Forms\Components\TextInput::make('leftover')
+                            TextInput::make('leftover')
                                 ->label('Leftover quantity')
                                 ->numeric()
                                 ->default(0)
                                 ->minValue(0),
                         ])->columns(2),
                     ])->columnSpan(1),
-                Forms\Components\Section::make()
+                Section::make()
                     ->schema([
-                        Forms\Components\DatePicker::make('purchase_date')
+                        DatePicker::make('purchase_date')
                             ->live()
                             ->suffixIcon('heroicon-o-calendar-date-range')
                             ->required()
                             ->maxDate(today())
                             ->native(false),
-                        Forms\Components\Toggle::make('use_same_date')
+                        Toggle::make('use_same_date')
                             ->live()
                             ->disabled(fn (Get $get) => empty($get('purchase_date')))
                             ->afterStateUpdated(function ($state, Get $get, Set $set) {
@@ -86,7 +106,7 @@ class ExpenseResource extends Resource
                                 }
                                 $set('usage_date', null);
                             }),
-                        Forms\Components\DatePicker::make('usage_date')
+                        DatePicker::make('usage_date')
                             ->suffixIcon('heroicon-o-calendar-date-range')
                             ->disabled(fn (Get $get) => $get('use_same_date'))
                             ->dehydrated()
@@ -96,16 +116,16 @@ class ExpenseResource extends Resource
                     ])->columnSpan(1),
 
                 // Control logging in google sheet
-                Forms\Components\Checkbox::make('append_to_google_sheets')
+                Checkbox::make('append_to_google_sheets')
                     ->label('Append to GSheets')
                     ->visible(config('services.google.sheet_id') && config('services.google.cloud_config_path'))
-                    ->hiddenOn(Pages\EditExpense::class)
+                    ->hiddenOn(EditExpense::class)
                     ->default(false),
 
                 // Hidden attributes which will be calculated automatically, we need them
                 // here to trigger the calculation located in Expense model.
-                Forms\Components\Hidden::make('interval')->default(0),
-                Forms\Components\Hidden::make('usage_per_day')->default(0),
+                Hidden::make('interval')->default(0),
+                Hidden::make('usage_per_day')->default(0),
             ]);
     }
 
@@ -114,47 +134,47 @@ class ExpenseResource extends Resource
         return $table
             ->defaultSort('purchase_date', 'desc')
             ->columns([
-                Tables\Columns\TextColumn::make('category.name')
+                TextColumn::make('category.name')
                     ->numeric()
                     ->weight(FontWeight::Bold)
                     ->sortable(),
-                Tables\Columns\TextColumn::make('price')
+                TextColumn::make('price')
                     ->money()
                     ->color(Color::Amber)
                     ->fontFamily(FontFamily::Mono)
                     ->alignRight()
                     ->sortable()
                     ->summarize(
-                        Tables\Columns\Summarizers\Sum::make()
+                        Sum::make()
                             ->money(divideBy: 100)
                     ),
-                Tables\Columns\TextColumn::make('usable')
+                TextColumn::make('usable')
                     ->alignRight()
                     ->formatStateUsing(fn ($state, Expense $expense) => "{$state} {$expense->category?->unit}")
                     ->summarize(
-                        Tables\Columns\Summarizers\Sum::make()
+                        Sum::make()
                             ->numeric()
                             ->visible(fn (Component $livewire) => ! empty($livewire->tableFilters['categories']['value']))
                             ->formatStateUsing(fn ($state) => round($state / 100, 2))
                     ),
-                Tables\Columns\TextColumn::make('leftover')
+                TextColumn::make('leftover')
                     ->alignRight()
                     ->formatStateUsing(fn ($state, Expense $expense) => "{$state} {$expense->category?->unit}")
                     ->summarize(
-                        Tables\Columns\Summarizers\Sum::make()
+                        Sum::make()
                             ->numeric()
                             ->visible(fn (Component $livewire) => ! empty($livewire->tableFilters['categories']['value']))
                             ->formatStateUsing(fn ($state) => round($state / 100, 2))
                     ),
-                Tables\Columns\TextColumn::make('purchase_date')
+                TextColumn::make('purchase_date')
                     ->date()
                     ->wrapHeader()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('usage_date')
+                TextColumn::make('usage_date')
                     ->date()
                     ->placeholder('TBD')
                     ->wrapHeader(),
-                Tables\Columns\TextColumn::make('interval')
+                TextColumn::make('interval')
                     ->label('Interval (days/months)')
                     ->wrapHeader()
                     ->alignCenter()
@@ -162,32 +182,32 @@ class ExpenseResource extends Resource
                         return "{$expense->interval} / ~{$expense->interval_months}";
                     })
                     ->sortable(),
-                Tables\Columns\TextColumn::make('usage_per_day')
+                TextColumn::make('usage_per_day')
                     ->label('Usage/day')
                     ->alignRight()
                     ->formatStateUsing(fn ($state, Expense $expense) => "{$state} {$expense->category?->unit}")
                     ->sortable()
                     ->summarize(
-                        Tables\Columns\Summarizers\Average::make()
+                        Average::make()
                             ->visible(fn (Component $livewire) => ! empty($livewire->tableFilters['categories']['value']))
                             ->formatStateUsing(fn ($state) => round($state / 100, 2))
                     ),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('categories')
+                SelectFilter::make('categories')
                     ->label('Category')
                     ->relationship('category', titleAttribute: 'name'),
 
                 Filter::make('usage_date')
-                    ->form([
+                    ->schema([
                         DatePicker::make('usage_from')
                             ->native(false)
                             ->maxDate(today()),
@@ -214,8 +234,8 @@ class ExpenseResource extends Resource
                             .Carbon::parse($data['usage_until'])->format('M d, Y');
                     }),
             ])
-            ->actions([
-                Tables\Actions\Action::make('view_note')
+            ->recordActions([
+                Action::make('view_note')
                     ->label(false)
                     ->icon('heroicon-o-chat-bubble-bottom-center-text')
                     ->slideOver()
@@ -226,16 +246,16 @@ class ExpenseResource extends Resource
                     ->modalAlignment(Alignment::Left)
                     ->modalSubmitAction(false)
                     ->modalCancelActionLabel('Close')
-                    ->modalWidth(MaxWidth::Medium)
+                    ->modalWidth(Width::Medium)
                     ->color(Color::Zinc)->visible(fn (Expense $expense) => ! empty($expense->note)),
-                Tables\Actions\EditAction::make(),
+                EditAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\ExportBulkAction::make()
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    ExportBulkAction::make()
                         ->label('Export to file')
                         ->exporter(ExpenseExporter::class),
-                    Tables\Actions\DeleteBulkAction::make(),
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -250,9 +270,9 @@ class ExpenseResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListExpenses::route('/'),
-            'create' => Pages\CreateExpense::route('/create'),
-            'edit' => Pages\EditExpense::route('/{record}/edit'),
+            'index' => ListExpenses::route('/'),
+            'create' => CreateExpense::route('/create'),
+            'edit' => EditExpense::route('/{record}/edit'),
         ];
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Resources\ExpenseResource\Widgets;
+namespace App\Filament\Resources\Expenses\Widgets;
 
 use App\Models\Category;
 use App\Models\Expense;
@@ -18,8 +18,6 @@ class ElectricityExpenseChart extends ApexChartWidget
     protected static ?string $heading = 'Electricity Usage';
 
     protected int|string|array $columnSpan = 'full';
-
-    protected static ?string $pollingInterval = '120s';
 
     protected function getFormSchema(): array
     {

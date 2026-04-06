@@ -29,7 +29,7 @@ return [
         //     'authEndpoint' => '/broadcasting/auth',
         //     'disableStats' => true,
         //     'encrypted' => true,
-        //     'forceTLS' => true,
+        //     'forceTLS' => env('VITE_PUSHER_SCHEME', 'https') === 'https',
         // ],
 
     ],
@@ -44,7 +44,7 @@ return [
     |
     */
 
-    'default_filesystem_disk' => env('FILAMENT_FILESYSTEM_DISK', 'public'),
+    'default_filesystem_disk' => env('FILESYSTEM_DISK', 'local'),
 
     /*
     |--------------------------------------------------------------------------
@@ -88,5 +88,36 @@ return [
     */
 
     'livewire_loading_delay' => 'default',
+
+    /*
+    |--------------------------------------------------------------------------
+    | File Generation
+    |--------------------------------------------------------------------------
+    |
+    | Artisan commands that generate files can be configured here by setting
+    | configuration flags that will impact their location or content.
+    |
+    | Often, this is useful to preserve file generation behavior from a
+    | previous version of Filament, to ensure consistency between older and
+    | newer generated files. These flags are often documented in the upgrade
+    | guide for the version of Filament you are upgrading to.
+    |
+    */
+
+    'file_generation' => [
+        'flags' => [],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | System Route Prefix
+    |--------------------------------------------------------------------------
+    |
+    | This is the prefix used for the system routes that Filament registers,
+    | such as the routes for downloading exports and failed import rows.
+    |
+    */
+
+    'system_route_prefix' => 'filament',
 
 ];

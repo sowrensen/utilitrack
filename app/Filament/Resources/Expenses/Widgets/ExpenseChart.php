@@ -1,32 +1,65 @@
 <?php
 
-namespace App\Filament\Resources\ExpenseResource\Widgets;
+namespace App\Filament\Resources\Expenses\Widgets;
 
 use App\Models\Category;
 use App\Models\Expense;
+use Carbon\Carbon;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Select;
 use Flowframe\Trend\Trend;
 use Flowframe\Trend\TrendValue;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Leandrocfe\FilamentApexCharts\Widgets\ApexChartWidget;
 
-class GasExpenseChart extends ApexChartWidget
+class ExpenseChart extends ApexChartWidget
 {
-    protected static ?string $chartId = 'gasExpenseChart';
-
-    protected static ?string $heading = 'Gas Usage';
+    protected static ?string $chartId = 'expenseChart';
 
     protected int|string|array $columnSpan = 'full';
 
-    protected static ?string $pollingInterval = '120s';
+    protected function getHeading(): ?string
+    {
+        return $this->filterFormData['category'].' Usage';
+    }
+
+    protected array $filterMap = [
+        'Electricity' => [
+            'date_column' => 'usage_date',
+            'aggregate_column' => 'usage_per_day',
+            'aggregate' => 'average',
+            'label' => 'Usage/day',
+        ],
+        'Gas' => [
+            'date_column' => 'usage_date',
+            'aggregate_column' => 'usage_per_day',
+            'aggregate' => 'average',
+            'label' => 'Usage/day',
+        ],
+        'Internet' => [
+            'date_column' => 'usage_date',
+            'aggregate_column' => 'price',
+            'aggregate' => 'sum',
+            'label' => 'Price',
+        ],
+        'Water Filter' => [
+            'date_column' => 'usage_date',
+            'aggregate_column' => 'price',
+            'aggregate' => 'sum',
+            'label' => 'Price',
+        ],
+    ];
 
     protected function getFormSchema(): array
     {
         return [
+            Select::make('category')
+                ->selectablePlaceholder(false)
+                ->options(Category::all()->pluck('name', 'name'))
+                ->default('Electricity'),
             DatePicker::make('usage_from')
                 ->native(false)
-                ->default(today()->startOfYear()),
+                ->default(today()->startOfMonth()->subMonths(11)),
             DatePicker::make('usage_until')
                 ->native(false)
                 ->default(today()),
@@ -35,18 +68,20 @@ class GasExpenseChart extends ApexChartWidget
 
     protected function getOptions(): array
     {
-        $cacheKey = 'gas_usage_'.collect($this->filterFormData)->values()->join('_');
-        $data = Cache::flexible($cacheKey, [now()->addHour(), now()->addHour()->addMinutes(5)], function () {
-            $gas = Category::query()->where('name', 'Gas')->first();
+        $cacheKey = 'usage_'.collect($this->filterFormData)->values()->join('_');
+        $category = $this->filterFormData['category'];
 
-            return Trend::query(Expense::query()->where('category_id', $gas->id))
-                ->dateColumn('usage_date')
+        $data = Cache::flexible($cacheKey, [now()->addHour(), now()->addHour()->addMinutes(5)], function () use ($category) {
+            $catId = Category::query()->where('name', $category)->first()->id;
+
+            return Trend::query(Expense::query()->where('category_id', $catId))
+                ->dateColumn($this->filterMap[$category]['date_column'])
                 ->between(
                     Carbon::parse($this->filterFormData['usage_from']),
                     Carbon::parse($this->filterFormData['usage_until']),
                 )
                 ->perMonth()
-                ->average('usage_per_day');
+                ->{$this->filterMap[$category]['aggregate']}($this->filterMap[$category]['aggregate_column']);
         });
 
         return [
@@ -57,7 +92,7 @@ class GasExpenseChart extends ApexChartWidget
             ],
             'series' => [
                 [
-                    'name' => 'Usage/day',
+                    'name' => $this->filterMap[$category]['label'],
                     'data' => $data->map(fn (TrendValue $value) => $value->aggregate / 100),
                 ],
             ],

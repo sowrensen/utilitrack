@@ -1,9 +1,11 @@
 <?php
 
-namespace App\Filament\Resources\ExpenseResource\Pages;
+namespace App\Filament\Resources\Expenses\Pages;
 
+use Filament\Actions\ImportAction;
+use Filament\Actions\CreateAction;
 use App\Filament\Imports\ExpenseImporter;
-use App\Filament\Resources\ExpenseResource;
+use App\Filament\Resources\Expenses\ExpenseResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Support\Colors\Color;
@@ -15,11 +17,11 @@ class ListExpenses extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\ImportAction::make()
+            ImportAction::make()
                 ->label('Import from file')
                 ->importer(ExpenseImporter::class)
                 ->color(Color::Amber),
-            Actions\CreateAction::make(),
+            CreateAction::make(),
         ];
     }
 }
