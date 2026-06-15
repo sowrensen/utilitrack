@@ -1,5 +1,7 @@
 <?php
 
+use Flowframe\Trend\TrendValue;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
 return [
@@ -118,8 +120,8 @@ return [
     */
 
     'serializable_classes' => [
-        Illuminate\Support\Collection::class,
-        Flowframe\Trend\TrendValue::class,
+        Collection::class,
+        TrendValue::class,
     ],
 
 ];

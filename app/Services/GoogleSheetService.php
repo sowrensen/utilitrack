@@ -2,10 +2,10 @@
 
 namespace App\Services;
 
-use Google\Service\Sheets\ValueRange;
-use Google\Service\Sheets\AppendValuesResponse;
 use Google\Client;
 use Google\Service\Sheets;
+use Google\Service\Sheets\AppendValuesResponse;
+use Google\Service\Sheets\ValueRange;
 
 class GoogleSheetService
 {
