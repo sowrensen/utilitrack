@@ -1,9 +1,9 @@
 name: Laravel Pint
 on:
-    push:
-        branches:
-            - main
-            - development
+  push:
+    branches:
+      - main
+      - development
 jobs:
   laravel-pint:
     runs-on: ubuntu-latest
@@ -18,11 +18,14 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: 8.2
+          php-version: 8.4
           tools: composer:v2
 
       - name: Composer Install
-        run: composer install
+        run: |
+          rm -rf vendor
+          composer clear-cache
+          composer install
 
       - name: Run Laravel Pint
         run: ./vendor/bin/pint
