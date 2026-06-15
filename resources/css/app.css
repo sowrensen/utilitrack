@@ -1,5 +1,7 @@
-@import 'tailwindcss';
+@import '../../vendor/filament/filament/resources/css/theme.css';
 
+@source '../../app/Filament/**/*';
+@source '../../resources/views/**/*';
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 

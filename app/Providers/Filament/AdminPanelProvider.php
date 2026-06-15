@@ -28,6 +28,7 @@ class AdminPanelProvider extends PanelProvider
         return $panel
             ->default()
             ->id('admin')
+            ->viteTheme('resources/css/app.css')
             ->profile()
             ->path(config('filament.path', '')) // Do not set path while using domain
             ->domain(config('filament.domain', ''))
